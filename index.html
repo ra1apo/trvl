@@ -6,23 +6,6 @@
     <title>Хибины за 5 дней: Интерактивный Путеводитель</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Application Structure Plan: 
-        The SPA is structured with a top navigation bar for quick access to key sections: Обзор (Overview), Логистика (Logistics), По дням (Daily Plan), Сложность (Difficulty Analysis), and Безопасность и Снаряжение (Safety & Gear). This thematic division allows users to intuitively find information.
-        - 'Обзор' provides a general summary and a conceptual route profile chart.
-        - 'Логистика' details arrival and first night specifics.
-        - 'По дням' is the core interactive section, with tabs for each of the 5 days, showing detailed route, passes, effort, and overnight locations. This focused daily view helps in understanding the progression.
-        - 'Сложность' presents the report's own assessment of its 1 k.s. category, including duration, length, and passes involved, plus the "note on difficulty".
-        - 'Безопасность и Снаряжение' compiles all safety advice, emergency exits, and gear recommendations.
-        This structure was chosen for usability, breaking down a dense report into digestible, logically grouped interactive segments, rather than a linear scroll. User flow is guided by the nav bar and then by intra-section controls (like day tabs).
-    -->
-    <!-- Visualization & Content Choices:
-        - Route Profile Chart (Обзор): Chart.js line chart. Goal: Inform, visualize trek elevation changes. Interaction: Tooltips on hover. Justification: Provides a quick visual summary of the trek's physical nature. Library: Chart.js (Canvas).
-        - Daily Plan Tabs (По дням): HTML sections toggled by JS. Goal: Organize, Inform. Interaction: Click tabs to switch day content. Justification: Clear, focused way to present detailed daily information. Method: HTML/JS.
-        - Pass Details (По дням): Embedded in text, potentially expandable later. Goal: Inform. Justification: Provides specific data points within context. Method: HTML.
-        - Difficulty Criteria (Сложность): HTML list/text. Goal: Inform/Clarify report's claims. Justification: Directly presents report's reasoning for 1 k.s. Method: HTML.
-        - Logistics & Safety Info: Structured HTML text. Goal: Inform. Justification: Clear presentation of critical practical info. Method: HTML.
-        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
-    -->
     <style>
         body { font-family: 'Inter', sans-serif; }
         .nav-link { transition: all 0.3s ease; }
@@ -50,6 +33,59 @@
             background-color: #ecfdf5; /* Emerald-50 */
             border: 1px solid #d1fae5; /* Emerald-100 */
         }
+        /* Weather Module Specific Styles */
+        .weather-card {
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .weather-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #10B981;
+            margin-bottom: 0.5rem;
+        }
+        .weather-card .temperature {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #374151; /* gray-700 */
+        }
+        .weather-card .description {
+            font-size: 1.125rem;
+            color: #4B5563; /* gray-600 */
+            margin-bottom: 1rem;
+        }
+        .weather-details {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .weather-detail-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem;
+        }
+        .weather-detail-item strong {
+            font-size: 1rem;
+            color: #374151; /* gray-700 */
+        }
+        .weather-detail-item span {
+            font-size: 0.875rem;
+            color: #6B7280; /* gray-500 */
+        }
+        .weather-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 <body class="bg-stone-100 text-stone-800">
@@ -64,6 +100,7 @@
                     <a href="#daily" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-700 hover:text-emerald-600 hover:bg-emerald-50 border-b-2 border-transparent">По дням</a>
                     <a href="#difficulty" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-700 hover:text-emerald-600 hover:bg-emerald-50 border-b-2 border-transparent">Сложность</a>
                     <a href="#safety" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-700 hover:text-emerald-600 hover:bg-emerald-50 border-b-2 border-transparent">Безопасность и Снаряжение</a>
+                    <a href="#weather" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-stone-700 hover:text-emerald-600 hover:bg-emerald-50 border-b-2 border-transparent">Погода</a>
                 </nav>
                 <button id="mobileMenuButton" class="md:hidden text-stone-700 hover:text-emerald-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
@@ -76,6 +113,7 @@
             <a href="#daily" class="block nav-link px-4 py-3 text-sm text-stone-700 hover:text-emerald-600 hover:bg-emerald-50">По дням</a>
             <a href="#difficulty" class="block nav-link px-4 py-3 text-sm text-stone-700 hover:text-emerald-600 hover:bg-emerald-50">Сложность</a>
             <a href="#safety" class="block nav-link px-4 py-3 text-sm text-stone-700 hover:text-emerald-600 hover:bg-emerald-50">Безопасность и Снаряжение</a>
+            <a href="#weather" class="block nav-link px-4 py-3 text-sm text-stone-700 hover:text-emerald-600 hover:bg-emerald-50">Погода</a>
         </div>
     </header>
 
@@ -118,304 +156,4 @@
                 <button data-day="day1" class="day-tab px-4 py-2 text-sm font-medium rounded-md bg-stone-200 hover:bg-emerald-500 hover:text-white">День 1</button>
                 <button data-day="day2" class="day-tab px-4 py-2 text-sm font-medium rounded-md bg-stone-200 hover:bg-emerald-500 hover:text-white">День 2</button>
                 <button data-day="day3" class="day-tab px-4 py-2 text-sm font-medium rounded-md bg-stone-200 hover:bg-emerald-500 hover:text-white">День 3</button>
-                <button data-day="day4" class="day-tab px-4 py-2 text-sm font-medium rounded-md bg-stone-200 hover:bg-emerald-500 hover:text-white">День 4</button>
-                <button data-day="day5" class="day-tab px-4 py-2 text-sm font-medium rounded-md bg-stone-200 hover:bg-emerald-500 hover:text-white">День 5</button>
-            </div>
-
-            <div id="dayContent" class="space-y-4">
-                </div>
-        </section>
-
-        <section id="difficulty" class="content-section space-y-6">
-            <h2 class="text-3xl font-semibold text-emerald-700 border-b-2 border-emerald-200 pb-2">Анализ категории сложности (по данным отчета)</h2>
-            <div class="bg-white p-6 rounded-lg shadow space-y-4">
-                <p>Маршрут заявлен как <strong>1 категория сложности (1 к.с.)</strong>. Согласно описанию, это подразумевает:</p>
-                <ul class="list-disc list-inside space-y-1 pl-4">
-                    <li><strong>Продолжительность:</strong> 4-6 ходовых дней (данный маршрут: 5 дней).</li>
-                    <li><strong>Протяженность:</strong> 80-100 км (общий ориентир для 1 к.с.).</li>
-                    <li><strong>Наличие нескольких простых перевалов:</strong>
-                        <ul class="list-disc list-inside space-y-1 pl-6 mt-1">
-                            <li>Юмьекорр: н/к (некатегорийный)</li>
-                            <li>Южный Чоргорр: н/к (лето)</li>
-                            <li>Академический (в рамках радиального выхода): н/к (лето)</li>
-                            <li>Южный Рисчорр (в рамках радиального выхода): н/к (лето)</li>
-                        </ul>
-                    </li>
-                    <li><strong>Требование:</strong> Автономное проживание в горной местности.</li>
-                </ul>
-                <div class="details-card p-4 mt-4">
-                     <h4 class="font-semibold text-lg text-emerald-600">Примечание по сложности от автора отчета:</h4>
-                     <p class="mt-1">Включение радиального выхода на озеро Академическое через перевал Академический (1А) делает этот маршрут <strong>более амбициозным для 1 к.с.</strong> Требуется повышенное внимание к ориентированию и физической подготовке.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="safety" class="content-section space-y-6">
-            <h2 class="text-3xl font-semibold text-emerald-700 border-b-2 border-emerald-200 pb-2">Безопасность и Снаряжение</h2>
-            
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="bg-white p-6 rounded-lg shadow space-y-3">
-                    <h3 class="text-xl font-semibold text-emerald-600">Аварийные выходы</h3>
-                    <p><strong>Дни 1-2:</strong> Возвращение вниз по долине р. Гольцовка к ст. Имандра.</p>
-                    <p><strong>Дни 3-5:</strong> Из района долины Кунийок/базы КСС:</p>
-                    <ul class="list-disc list-inside pl-4">
-                        <li>Трансфер с базы КСС (не гарантирован, уточнять).</li>
-                        <li>Пешком в Кировск по долине Кукисвумчорр (наиболее вероятный, ~15-20 км).</li>
-                    </ul>
-                </div>
-
-                <div class="bg-white p-6 rounded-lg shadow space-y-3">
-                    <h3 class="text-xl font-semibold text-emerald-600">Важные моменты</h3>
-                    <ul class="list-disc list-inside space-y-1 pl-4">
-                        <li><strong>Полная автономность</strong> с момента схода с поезда.</li>
-                        <li><strong>Психологическая готовность</strong> к немедленному началу похода.</li>
-                        <li><strong>Налобные фонари:</strong> обязательны, легкодоступны.</li>
-                        <li><strong>Навигация:</strong> Умение пользоваться картой, GPS (смартфон с офлайн-картами, nakarte.me). Тропы могут быть нечеткими. <br> <a href="https://disk.yandex.ru/d/v-w4PY6jU47cdw" target="_blank" class="text-emerald-600 hover:text-emerald-800 underline">Ссылка на файл нитки маршрута</a></li>
-                        <li><strong>Погода:</strong> Крайне переменчива (от тепла до холода, дождь, ветер).</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-lg shadow space-y-3">
-                <h3 class="text-xl font-semibold text-emerald-600">Мобильная связь</h3>
-                <ul class="list-disc list-inside space-y-1 pl-4">
-                    <li><strong>Начало маршрута (ст. Имандра):</strong> Связь есть.</li>
-                    <li><strong>Промежуточные участки:</strong> Долина р. Гольцовка (местами), с перевалов (Юмьекорр, Юж. Чоргорр, Академический) при видимости БС.</li>
-                    <li><strong>Центральные долины (Кунийок):</strong> Связи нет.</li>
-                    <li><strong>Выход (долина Кукисвумчорр):</strong> Появляется во второй половине долины (в прямой видимости Кировска).</li>
-                    <li class="details-card p-3 mt-2"><strong>Вывод:</strong> Не рассчитывать на постоянную связь. Предупредить близких. Рассмотреть спутниковый мессенджер/телефон.</li>
-                </ul>
-            </div>
-
-            <div class="bg-white p-6 rounded-lg shadow space-y-3">
-                <h3 class="text-xl font-semibold text-emerald-600">Рекомендуемое снаряжение и питание</h3>
-                 <ul class="list-disc list-inside space-y-1 pl-4">
-                    <li>Качественная ветро- и влагозащитная одежда (куртка, брюки).</li>
-                    <li>Термобелье, теплая флисовая кофточка, запасные носки.</li>
-                    <li>Надежные треккинговые ботинки с поддержкой голеностопа.</li>
-                    <li>Треккинговые палки.</li>
-                    <li>Палатка, спальники, коврики, газ, аптечка, ремнабор.</li>
-                    <li><strong>Питание:</strong> Легкие, высококалорийные продукты (сублиматы, сушеные овощи/фрукты, крупы, орехи, сухофрукты, шоколад).</li>
-                    <li><strong>Водные ресурсы:</strong> Много ручьев/озер. Пополнять запасы. Кипятить при сомнении.</li>
-                 </ul>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow space-y-3">
-                <h3 class="text-xl font-semibold text-emerald-600">Ключевые аспекты безопасности</h3>
-                 <ul class="list-disc list-inside space-y-1 pl-4">
-                    <li><strong>Обязательно зарегистрируйте маршрут в МЧС.</strong> Укажите состав, даты, ночевки, контакты.</li>
-                    <li>Сообщите информацию о маршруте доверенным лицам.</li>
-                    <li>Осторожность на курумнике и осыпях.</li>
-                 </ul>
-            </div>
-        </section>
-    </main>
-
-    <footer class="bg-stone-800 text-stone-300 text-center p-6 mt-12">
-        <p>&copy; 2024 Копирайт бай Павлик, все права резервед</p>
-        <p class="text-xs mt-1">Информация представлена для ознакомления и нехрен шастать!</p>
-    </footer>
-
-    <script>
-        const dailyPlanData = {
-            day1: {
-                title: "День 1: Переход через перевал Юмьекорр к притоку реки Гольцовка",
-                route: "От места ночевки в долине Аку-Аку (Изумрудное озеро) подъем к перевалу Юмьекорр, прохождение перевала и спуск к одному из притоков реки Гольцовка.",
-                passDetails: [
-                    { name: "Перевал Юмьекорр", category: "н/к - 1А", description: "Один из характерных перевалов Хибин, обычно несложен в летних условиях. Категория сложности зависит от конкретного пути и снежной обстановки (в начале августа снежники на перевалах могут сохраняться). Требует уверенного движения по курумнику." }
-                ],
-                load: "Активный ходовой день с набором и сбросом высоты. Темп движения двух человек может быть довольно высоким.",
-                overnight: "У ручья, приток реки Гольцовка. Удобное место для установки палатки, рядом вода."
-            },
-            day2: {
-                title: "День 2: Подъем к перевалу Южный Чоргорр и спуск в долину реки Кунийок",
-                route: "Продолжение движения вверх по долине притока реки Гольцовка, подъем вдоль ручья к перевалу Южный Чоргорр, прохождение перевала и спуск в обширную долину реки Кунийок.",
-                passDetails: [
-                    { name: "Перевал Южный Чоргорр", category: "н/к - 1А", description: "Ключевой перевал этого дня. Подъем и спуск могут быть по достаточно крутым осыпям. С перевала открываются потрясающие виды на центральные Хибины." }
-                ],
-                load: "Один из самых насыщенных и трудоемких дней, требующий концентрации и физических сил.",
-                overnight: "Долина реки Кунийок, после прохождения перевала. В долине много удобных и живописных мест для стоянок с доступом к воде."
-            },
-            day3: {
-                title: "День 3: Радиальный выход на озеро Академическое (осмотр сверху) через перевалы Рисчорр Южный и Академический",
-                route: "Стартовая/Конечная точка: База КСС (Куэльпорр), из базового лагеря в долине Кунийок. Нитка маршрута: База КСС (Куэльпорр) → Перевал Рисчорр Южный (890 м) → Подъём на правый отрог (плато) → Траверс Перевала Академический (1040 м, по седловине) → Озеро Академическое (осмотр сверху) → Обратный траверс Перевала Академический (по седловине) → Спуск с плато на Перевал Рисчорр Южный → База КСС (Куэльпорр).",
-                passDetails: [
-                     { name: "Перевал Рисчорр Южный", height: "890 м", category: "н/к (лето), 1А (зима)", description: "Соединяет ущелье Ведьм (Каскаснюнйок) с южными истоками реки Рисйок. Подъем обычно несложный." },
-                     { name: "Подъём на правый отрог (плато)", description: "От перевала Рисчорр Южный, четко читаемая тропа, обозначена на карте." },
-                     { name: "Перевал Академический", height: "1040 м", category: "1А (лето), 1Б (зима)", description: "Соединяет 2-й правый приток реки Кунийок с рекой Южная Каскаснюнйок. Траверс по седловине, без спецснаряжения. Возможны снежники." },
-                     { name: "Озеро Академическое (осмотр сверху)", description: "Основная цель радиального выхода. Живописный вид с плато." }
-                ],
-                load: "Один из наиболее физически сложных дней. Маршрут достаточно протяжен и с ощутимым набором высоты, что требует отличной физической подготовки. Хождение по пересеченной местности, возможным курумникам и снежникам.",
-                overnight: "Долина реки Кунийок, неподалеку от базы КСС (возвращение в тот же лагерь)."
-            },
-            day4: {
-                title: "День 4: Исследование долины Кукисвумчорр / Отдых",
-                route: "Этот день посвящен исследованию живописной долины Кукисвумчорр, которая находится в непосредственной близости от долины Кунийок.",
-                passDetails: [],
-                load: "Гибкий день, нагрузка зависит от выбранной активности (еще один радиальный выход к водопадам, озерам, циркам, либо день отдыха и прогулок). Может быть использован для восстановления после сложного Дня 3.",
-                overnight: "Там же, в долине реки Кунийок, неподалеку от базы КСС."
-            },
-            day5: {
-                title: "День 5: Выход из маршрута",
-                route: "Выход из долины реки Кунийок в сторону населенного пункта (вероятно, Кировска, микрорайона Кукисвумчорр, или Апатитов).",
-                passDetails: [],
-                load: "Достаточно длинный, но обычно несложный пеший переход по долине, скорее всего, по выраженной тропе или дороге.",
-                overnight: "Завершение маршрута. В Кировске или Апатитах есть возможность пополнить запасы и спланировать дальнейшее возвращение."
-            }
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const navLinks = document.querySelectorAll('#mainNav a.nav-link, #mobileMenu a.nav-link');
-            const contentSections = document.querySelectorAll('.content-section');
-            const dayTabs = document.querySelectorAll('.day-tab');
-            const dayContentContainer = document.getElementById('dayContent');
-            const mobileMenuButton = document.getElementById('mobileMenuButton');
-            const mobileMenu = document.getElementById('mobileMenu');
-
-            function setActiveSection(hash) {
-                navLinks.forEach(link => {
-                    link.classList.toggle('active', link.getAttribute('href') === hash);
-                });
-                contentSections.forEach(section => {
-                    section.classList.toggle('active', `#${section.id}` === hash);
-                });
-                 window.scrollTo(0, 0);
-            }
-            
-            function displayDayContent(dayKey) {
-                const dayData = dailyPlanData[dayKey];
-                if (!dayData) {
-                    dayContentContainer.innerHTML = '<p>Информация для этого дня не найдена.</p>';
-                    return;
-                }
-
-                let passesHtml = '';
-                if (dayData.passDetails && dayData.passDetails.length > 0) {
-                    passesHtml = '<h4 class="font-semibold text-lg text-emerald-600 mt-3 mb-2">Ключевые точки и перевалы:</h4><div class="space-y-3">';
-                    dayData.passDetails.forEach(pass => {
-                        passesHtml += `
-                            <div class="p-3 rounded-md pass-highlight">
-                                <strong class="text-emerald-700">${pass.name}</strong>
-                                ${pass.category ? `(Категория: ${pass.category})` : ''}
-                                ${pass.height ? `(Высота: ${pass.height})` : ''}
-                                <p class="text-sm text-stone-600 mt-1">${pass.description || ''}</p>
-                            </div>`;
-                    });
-                    passesHtml += '</div>';
-                }
-
-                dayContentContainer.innerHTML = `
-                    <div class="bg-white p-6 rounded-lg shadow">
-                        <h3 class="text-2xl font-semibold text-emerald-600 mb-3">${dayData.title}</h3>
-                        <div class="space-y-3">
-                            <div><strong class="font-medium text-stone-700">Маршрут:</strong> <p class="text-stone-600 leading-relaxed">${dayData.route}</p></div>
-                            ${passesHtml}
-                            <div><strong class="font-medium text-stone-700">Нагрузка:</strong> <p class="text-stone-600 leading-relaxed">${dayData.load}</p></div>
-                            <div><strong class="font-medium text-stone-700">Место ночевки:</strong> <p class="text-stone-600 leading-relaxed">${dayData.overnight}</p></div>
-                        </div>
-                    </div>
-                `;
-            }
-
-
-            navLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = link.getAttribute('href');
-                    setActiveSection(targetId);
-                    if (mobileMenu.classList.contains('block')) {
-                         mobileMenu.classList.remove('block');
-                         mobileMenu.classList.add('hidden');
-                    }
-                    if (targetId === '#daily' && !document.querySelector('.day-tab.active')) {
-                         dayTabs[0].click(); // Activate first day tab if daily section is opened directly
-                    }
-                });
-            });
-
-            dayTabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    dayTabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    displayDayContent(tab.dataset.day);
-                });
-            });
-            
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-                mobileMenu.classList.toggle('block');
-            });
-
-            const initialHash = window.location.hash || '#overview';
-            setActiveSection(initialHash);
-            if (initialHash === '#daily' || (initialHash === '#overview' && !document.querySelector('.day-tab.active'))) {
-                 dayTabs[0].click(); 
-            }
-
-
-            const routePoints = ['Ст. Имандра', 'Долина Аку-Аку', 'Пер. Юмьекорр', 'Долина Гольцовки', 'Пер. Юж. Чоргорр', 'Долина Кунийок', 'Пер. Рисчорр Юж.', 'Пер. Академический', 'Оз. Академическое (вид)', 'Долина Кунийок (возврат)', 'Долина Кукисвумчорр (исслед.)', 'Кировск/Апатиты'];
-            const routeElevations = [150, 250, 840, 500, 850, 400, 890, 1040, 1000, 400, 450, 300];
-
-            const ctx = document.getElementById('routeProfileChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: routePoints,
-                    datasets: [{
-                        label: 'Концептуальная высота (м)',
-                        data: routeElevations,
-                        borderColor: '#10B981', // emerald-500
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)', // emerald-500 with opacity
-                        tension: 0.1,
-                        fill: true,
-                        pointBackgroundColor: '#059669', // emerald-600
-                        pointBorderColor: '#ffffff',
-                        pointHoverBackgroundColor: '#ffffff',
-                        pointHoverBorderColor: '#047857' // emerald-700
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Высота (м)' }
-                        },
-                        x: {
-                             ticks: {
-                                autoSkip: false,
-                                maxRotation: 45,
-                                minRotation: 30,
-                                callback: function(value, index, values) {
-                                    const label = this.getLabelForValue(value);
-                                    return label.length > 16 ? label.substring(0, 16) + '...' : label;
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: true, position: 'top' },
-                        tooltip: {
-                            enabled: true,
-                            mode: 'index',
-                            intersect: false,
-                             callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        label += context.parsed.y + ' м';
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+                <button data-day="day4" class="day-tab px-4 py-2 text-sm font-medium rounded-md bg-stone-200 hover:bg-emerald-500 hover:text-white">День 4
