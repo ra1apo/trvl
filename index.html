@@ -98,18 +98,15 @@
         </section>
 
         <section id="weather" class="content-section space-y-6">
-  <h2 class="text-3xl font-semibold text-emerald-700 border-b-2 border-emerald-200 pb-2">Погода на базе КСС</h2>
-  <div class="bg-white p-6 rounded-lg shadow text-center">
-    <p class="mb-4 text-stone-700">Прогноз предоставлен сервисом Yr.no (Норвежский метеоцентр)</p>
-    <a class="yr-no-forecast-link"
-       href="https://www.yr.no/en/forecast/daily-table/2-12358918/Russia/Murmansk%20Oblast/Baza%20KSS"
-       target="_blank"
-       rel="noopener noreferrer">
-      <img src="https://www.yr.no/en/content/2-12358918/card.html"
-           alt="Weather forecast from Yr.no"
-           style="max-width:100%; border:0;" />
-    </a>
-  </div>
+  const accessKey = 'your_key';
+
+const headers = {
+    'X-Yandex-Weather-Key': accessKey
+};
+
+fetch('https://api.weather.yandex.ru/v2/forecast?lat=52.37125&lon=4.89388', { headers })
+    .then(response => response.json())
+    .then(json => console.log(json));
 </section>
 
 
