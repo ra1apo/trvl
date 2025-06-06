@@ -114,18 +114,28 @@
 </section>
 
 <section id="weather" class="content-section space-y-6">
-    <h2 class="text-3xl font-semibold text-emerald-700 border-b-2 border-emerald-200 pb-2">Погода на базе КСС</h2>
-    <div class="bg-white p-4 rounded-lg shadow">
-        <iframe 
-            src="https://pogoda51.ru/baza-kss" 
-            width="100%" 
-            height="500" 
-            style="border: none; overflow: hidden;" 
-            loading="lazy"
-            title="Погода на базе КСС">
-        </iframe>
-    </div>
+  <h2 class="text-3xl font-semibold text-emerald-700 border-b-2 border-emerald-200 pb-2">Погода на базе КСС</h2>
+  <div class="bg-white p-4 rounded-lg shadow space-y-4">
+    <!-- График прогноза (Meteogram) -->
+    <iframe
+      src="https://www.yr.no/en/content/1-8411033/meteogram.svg"
+      width="100%" height="360"
+      style="border:none;"
+      title="График погоды на Yr.no"
+      loading="lazy">
+    </iframe>
+
+    <!-- Табличный прогноз на 9 дней -->
+    <iframe
+      src="https://www.yr.no/en/content/1-8411033/table.html"
+      width="100%" height="480"
+      style="border:none;"
+      title="Табличный прогноз погоды на Yr.no"
+      loading="lazy">
+    </iframe>
+  </div>
 </section>
+
 
 
         <section id="daily" class="content-section space-y-6">
